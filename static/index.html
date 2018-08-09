@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>Arkansas BalloonSAT Flight Information System & Intelligent Controller</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+        <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.12.0.min.js"><\/script>')</script>
+
+        <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/socket.io.js') }}"></script>
+       
+
+        <!-- <script src="https://rawgit.com/Mikhus/canv-gauge/master/gauge.min.js"></script> -->
+
+        <!-- Place favicon.ico in the root directory -->
+    </head>
+    <body>
+        <div class="jumbotron">
+          <div class="container">
+            <h2>Arkansas BalloonSAT</h2>
+            Flight Telemetry:
+          </div>
+        </div>
+
+       <!-- Example row of columns -->
+                         
+      <div class="col-md-4">
+
+        Longitude: <span class="label label-warning" id='longitude'>
+        Latitude: <span class="label label-danger" id='latitude'>
+        Altitude: <span class="label label-primary" id='altitude'>
+        ELAPSE: <span class="label label-info" id='elapse'>
+        
+        <!--  {{ 'ON' if switch else 'OFF'}} originally in <h2> above-->
+
+      </div>
+  
+        <script>
+                  $(document).ready(function(){
+
+                  function updateBalloon(balloonState){
+                    $('#altitude').text(balloonState.altitude)
+                    $('#elapse').text(balloonState.elapse.toFixed(4))
+                    
+                    $('#longitude').text(balloonState.longitude.toFixed(4))
+                    $('#latitude').text(balloonState.latitude.toFixed(4))
+
+                  };
+
+                  //set up switch server sent event endpoint !!! these are the final data ready to be sent
+                  var balloonSource = new EventSource("{{ url_for('static')}}");
+                  balloonSource.onmessage = function(e) {
+                  var data = $.parseJSON(e.data);
+                  updateBalloon($.parseJSON(e.data));
+                  // console.log(e.data);
+                  }
+              });
+
+        </script>
+    </body>
+</html>
